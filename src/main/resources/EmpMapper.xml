@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="javaweb.tlias.mapper.EmpMapper">
+
+  <!--根据员工id批量删除员工基本信息-->
+  <delete id="deleteByIds">
+    delete from emp where id in
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+  </delete>
+  
+  <!--根据条件查询员工列表-->
+  <select id="list" resultType="javaweb.tlias.pojo.Emp">
+    select e.*,d.name deptName from emp e left join dept d on e.dept_id = d.id
+    <where>
+      <if test="name != null and name != ''">
+        and e.name like concat('%',#{name},'%')
+      </if>
+      <if test="gender != null">
+        and e.gender = #{gender}
+      </if>
+      <if test="begin != null and end != null">
+        and e.update_time between #{begin} and #{end}
+      </if>
+    </where>
+    order by e.update_time desc
+  </select>
+
+  <!--根据员工id动态更新员工基本信息-->
+  <update id="updateById">
+    UPDATE emp 
+    <set>
+      <if test="username != null and username != ''">username=#{username},</if>
+      <if test="password != null and password != ''">password=#{password},</if>
+      <if test="name != null and name != ''">name=#{name},</if>
+      <if test="gender != null">gender=#{gender},</if>
+      <if test="phone != null and phone != ''">phone=#{phone},</if>
+      <if test="job != null and job != ''">job=#{job},</if>
+      <if test="salary != null">salary=#{salary},</if>
+      <if test="image != null and image != ''">image=#{image},</if>
+      <if test="entryDate != null">entry_date=#{entryDate},</if>
+      <if test="deptId != null">dept_id=#{deptId},</if>
+      <if test="updateTime != null">update_time=#{updateTime},</if>
+    </set>
+    where id=#{id}
+  </update>
+
+  <!--统计员工职位人数-->
+  <select id="countEmpJobData" resultType="java.util.Map">
+    select 
+      (case when job = 1 then "班主任"
+            when job = 2 then "讲师"
+            when job = 3 then "学工主管"
+            when job = 4 then "教研主管"
+            when job = 5 then "咨询师"
+            else "其他" end) pos,
+      count(*) num 
+    from emp group by job order by num
+  </select>
+
+</mapper>
