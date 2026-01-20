@@ -25,8 +25,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 public class TliasApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TliasApplication.class, args);4
+		SpringApplication.run(TliasApplication.class, args);
 	}
 
 }
-3
